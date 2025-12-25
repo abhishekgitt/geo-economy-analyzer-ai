@@ -1,8 +1,13 @@
-from django.shortcuts import render
-from rest_framework import generics
-from .models import Article 
-from .serializers import ArticleSerializer 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-class ArticleList(generics.ListAPIView):
-    queryset = Article.objects.order_by()
-    serializer_class = ArticleSerializer
+from news.models import SummaryPage
+from news.serializers import SummaryPageSerializer
+
+
+class SummaryListAPIView(APIView):
+    def get(self, request):
+        summaries = SummaryPage.objects.select_related("article").all()
+        serializer = SummaryPageSerializer(summaries, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
