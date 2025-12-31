@@ -1,3 +1,8 @@
+body{
+    background-color: rgb(229, 234, 255);
+    color:black;
+}
+
 /* Page container */
 .container {
   padding: 20px;
@@ -10,14 +15,24 @@
 }
 
 /* News card */
-.card {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+.news-card {
+  padding: 12px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color:#FAFFFF;
+  
 }
 
-/* Card title */
-.card-title {
-  margin-bottom: 8px;
+.news-card:hover {
+  background-color: #E1F3F3;
 }
+
+.source {
+  font-size: 12px;
+  color: gray;
+}
+
+
+

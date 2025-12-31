@@ -32,7 +32,6 @@ except Exception:
 
 
 
-
 # load .env values
 try:
     from dotenv import load_dotenv
@@ -49,6 +48,7 @@ TOP_N = int(os.getenv("TOP_N", "20"))
 FETCH_INTERVAL = int(os.getenv("FETCH_MIN_INTERVAL_SECONDS", "3600"))
 ARTICLE_FETCH_TIMEOUT = int(os.getenv("ARTICLE_FETCH_TIMEOUT", "10")) #It sets how long (in seconds) your app will wait
 ARTICLE_FETCH_PAUSE = float(os.getenv("ARTICLE_FETCH_PAUSE_SECONDS", "0.6"))  # delay between fetching pages
+MIN_ARTICLE_LENGTH = int(os.getenv("MIN_ARTICLE_LENGTH", 300))
 
 #Keywords
 ECON_KEYWORDS = os.getenv("ECON_KEYWORDS", "inflation,gdp,recession,oil,sanction,trade,tariff,currency")
@@ -58,13 +58,11 @@ USER_AGENT = os.getenv("FETCH_USER_AGENT", "geo-econ-fetcher/1.0 (+https://examp
 
 
 
-
 def build_gdelt_query(keywords):
     """Converts them into a GDELT-style search query and returns it ,
     eg: (inflation OR oil+prices OR trade+war)"""
     q = " OR ".join(quote_plus(k) for k in keywords)
     return f"({q})"
-
 
 
 
@@ -92,10 +90,6 @@ def parse_published_at(raw):
         return dt
     except Exception:
         return None
-
-
-
-
 
 
 
@@ -172,9 +166,7 @@ def fetch_full_text(url, timeout=ARTICLE_FETCH_TIMEOUT):
     return ""
 
 
-
-
-
+#--------------------------------------------------------------------------------------------
 
 class Command(BaseCommand):
     help = "Fetch top economic news (GDELT) and save to DB (Article + SummaryPage), extracting full article text"
@@ -244,7 +236,7 @@ class Command(BaseCommand):
             provided_snippet = (item.get("snippet") or "").strip()
             published_at = parse_published_at(item.get("published_at_raw"))
 
-
+#---->
             # if provided snippet too short, try to extract full body
             snippet = provided_snippet
             if not snippet or len(snippet) < 200:
