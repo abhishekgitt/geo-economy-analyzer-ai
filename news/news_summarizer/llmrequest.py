@@ -1,4 +1,5 @@
-import request
+import requests
+from .prompt import build_prompt
 
 
 # Ollama config
