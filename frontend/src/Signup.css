@@ -1,0 +1,88 @@
+/* PAGE BACKGROUND */
+.signup-page {
+  min-height: 100vh;
+  background: rgb(229, 234, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* MAIN CARD */
+.signup-card {
+  color: black;
+  background: white;
+  width: 900px;
+  max-width: 95%;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* LEFT SIDE */
+.signup-left {
+  flex: 1;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.signup-left h2 {
+  margin-bottom: 30px;
+}
+
+.signup-left input {
+  background-color: white;
+  color:black;
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.signup-left button {
+  margin-top: 10px;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.signup-left button:hover {
+  background: grey;
+}
+
+/* ERROR */
+.signup-error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* RIGHT SIDE */
+.signup-right {
+  flex: 1;
+  background: #f5f7ff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.signup-right h3 {
+  margin-bottom: 10px;
+}
+
+/* INPUT COLORS */
+.signup-username-input,
+.signup-password-input,
+.signup-email-input {
+  background-color: white;
+  color: black;
+}

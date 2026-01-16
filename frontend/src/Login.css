@@ -1,0 +1,87 @@
+/* PAGE BACKGROUND */
+.login-page {
+  min-height: 100vh;
+  background: rgb(229, 234, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* MAIN CARD */
+.login-card {
+  color:black;
+  background: white;
+  width: 900px;
+  max-width: 95%;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* LEFT SIDE */
+.login-left {
+  flex: 1;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-left h2 {
+  margin-bottom: 30px;
+}
+
+.login-left input {
+  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.login-left button {
+  margin-top: 10px;
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-left button:hover {
+  background: grey;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* RIGHT SIDE */
+.login-right {
+  flex: 1;
+  background: #f5f7ff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.login-right img {
+  max-width: 250px;
+  margin-bottom: 20px;
+}
+
+.login-right h3 {
+  margin-bottom: 10px;
+}
+
+.username-inputbox, .password-inputbox{
+  background-color: white;
+  color: black;
+}

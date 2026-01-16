@@ -32,6 +32,7 @@ STRICT RULES:
 - Use emojis where appropriate
 - Use clear headings, bold text, bullet points, and blockquotes
 - Keep tone professional and neutral
+- Keep the response language english
 
 --------------------------------------------------
 

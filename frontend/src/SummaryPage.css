@@ -1,0 +1,80 @@
+/* Page background */
+body {
+  background-color: rgb(229, 234, 255);
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Centered reading column (ChatGPT style) */
+.summary-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Title */
+.article-title {
+  font-size: 2.3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Section title */
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ===== CLEAN MARKDOWN (GPT STYLE) ===== */
+
+.markdown-body {
+  background: transparent !important;
+  color: #0f172a !important;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+/* Headings inside markdown */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 1.8rem 0 0.8rem;
+  font-weight: 600;
+}
+
+/* Paragraphs */
+.markdown-body p {
+  margin-bottom: 1.1rem;
+  color: #1f2937;
+}
+
+/* Lists */
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.4rem;
+}
+
+/* Inline code */
+.markdown-body code {
+  background: #eef2ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Code blocks */
+.markdown-body pre {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+.card-image{
+  background-color: rgb(229, 234, 255);
+}

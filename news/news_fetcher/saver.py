@@ -1,11 +1,30 @@
 import time
 from django.utils import timezone
 
-from news.models import Article, SummaryPage
-
-from .config import MIN_ARTICLE_LENGTH, ARTICLE_FETCH_PAUSE
+from news.models import Article, SummaryPage, Topic
+from news.news_fetcher.config import (
+    MIN_ARTICLE_LENGTH,
+    ARTICLE_FETCH_PAUSE,
+    ECON_KEYWORDS,
+)
 from .utils import word_count, parse_published_at
 from .extractors import fetch_full_text
+
+
+def assign_topics(article, text):
+    """
+    Attach Topic objects to an article based on keyword matching.
+    """
+    text = text.lower()
+
+    for keyword in ECON_KEYWORDS:
+        if keyword.lower() in text:
+            try:
+                topic = Topic.objects.get(name=keyword)
+                article.topics.add(topic)
+            except Topic.DoesNotExist:
+                # Topic table not seeded properly
+                pass
 
 
 def save_articles(articles, stdout):
@@ -22,18 +41,21 @@ def save_articles(articles, stdout):
         snippet = (item.get("snippet") or "").strip()
         published_at = parse_published_at(item.get("published_at_raw"))
 
+        # Try fetching full content if snippet is too short
         if word_count(snippet) < MIN_ARTICLE_LENGTH:
             fetched = fetch_full_text(url)
             if word_count(fetched) >= MIN_ARTICLE_LENGTH:
                 snippet = fetched
             time.sleep(ARTICLE_FETCH_PAUSE)
 
+        # Skip low-quality articles
         if word_count(snippet) < MIN_ARTICLE_LENGTH:
             stdout.write(
                 f" SKIPPED (low quality {word_count(snippet)} words): {title[:80]}"
             )
             continue
 
+        # Save / update Article
         article_obj, created = Article.objects.update_or_create(
             url=url,
             defaults={
@@ -44,10 +66,15 @@ def save_articles(articles, stdout):
             }
         )
 
+        # ASSIGN TOPICS HERE (CRITICAL FIX)
+        combined_text = f"{article_obj.title} {article_obj.snippet}"
+        assign_topics(article_obj, combined_text)
+
+        # Create / update SummaryPage
         SummaryPage.objects.update_or_create(
             article=article_obj,
             defaults={
-                "hero_image": "",
+                "hero_image": "http://127.0.0.1:8000/static/news/llama-logo.png",
                 "short_preview": snippet[:200],
                 "ai_summary": snippet,
                 "summarized_at": None,
