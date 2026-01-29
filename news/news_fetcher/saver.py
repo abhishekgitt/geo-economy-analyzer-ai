@@ -16,15 +16,16 @@ def assign_topics(article, text):
     Attach Topic objects to an article based on keyword matching.
     """
     text = text.lower()
+    assigned = []
 
     for keyword in ECON_KEYWORDS:
         if keyword.lower() in text:
-            try:
-                topic = Topic.objects.get(name=keyword)
+            topic = Topic.objects.filter(name__iexact=keyword).first()
+            if topic:
                 article.topics.add(topic)
-            except Topic.DoesNotExist:
-                # Topic table not seeded properly
-                pass
+                assigned.append(topic.name)
+    
+    return assigned
 
 
 def save_articles(articles, stdout):

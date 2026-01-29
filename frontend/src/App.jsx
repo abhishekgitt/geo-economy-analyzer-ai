@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import Home from "./Home";
 import SummaryPage from "./SummaryPage";
 import Login from "./Login";
@@ -13,46 +14,62 @@ function ProtectedRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 }
 
+const PageWrapper = ({ children }) => (
+  <Motion.div
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+  >
+    {children}
+  </Motion.div>
+);
+
 function App() {
+  const location = useLocation();
+
   return (
-    <Routes>
-      {/* PUBLIC */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* PUBLIC */}
+        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
 
-      {/* PROTECTED */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
+        {/* PROTECTED */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <PageWrapper><Home /></PageWrapper>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/select-topics"
-        element={
-          <ProtectedRoute>
-            <SelectTopics />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/select-topics"
+          element={
+            <ProtectedRoute>
+              <PageWrapper><SelectTopics /></PageWrapper>
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/summary/:id"
-        element={
-          <ProtectedRoute>
-            <SummaryPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/summary/:id"
+          element={
+            <ProtectedRoute>
+              <PageWrapper><SummaryPage /></PageWrapper>
+            </ProtectedRoute>
+          }
+        />
 
-      {/* FALLBACK */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
 export default App;
+
 
