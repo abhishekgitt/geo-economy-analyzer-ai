@@ -120,6 +120,7 @@ function Home() {
                   src={item.hero_image || "/static/news/llama-logo.png"}
                   alt="article"
                   loading="lazy"
+                  className={!item.hero_image ? "default-logo" : ""}
                 />
                 <div className="image-overlay" />
               </div>

@@ -98,6 +98,12 @@
   display: block;
 }
 
+.main-image-wrap img.default-logo {
+  object-fit: contain;
+  padding: 140px;
+  background: var(--glass-bg);
+}
+
 .image-overlay-grad {
   position: absolute;
   top: 0;

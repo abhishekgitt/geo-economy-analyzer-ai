@@ -120,6 +120,7 @@ function SummaryPage() {
             style={{ y: imageY }}
             src={data.hero_image || "/static/news/llama-logo.png"}
             alt="article"
+            className={!data.hero_image ? "default-logo" : ""}
           />
           <div className="image-overlay-grad" />
           <div className="image-caption">Geoeconomic intelligence mapping for {data.article.title}.</div>
