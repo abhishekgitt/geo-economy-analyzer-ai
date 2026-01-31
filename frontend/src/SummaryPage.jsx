@@ -122,18 +122,34 @@ function SummaryPage() {
         </div>
       </nav>
 
-      <Motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="summary-hero"
-      >
-        <div className="hero-meta">
-          <span className="tag-pill">{data.article.source}</span>
-          <span><Clock size={14} /> 8m analysis</span>
-        </div>
-        <h1 className="article-title">{data.article.title}</h1>
-      </Motion.div>
+      <div className="summary-header-split">
+        <Motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="summary-hero"
+        >
+          <div className="hero-meta">
+            <span className="tag-pill">{data.article.source}</span>
+            <span><Clock size={14} /> 8m analysis</span>
+          </div>
+          <h1 className="article-title">{data.article.title}</h1>
+        </Motion.div>
+
+        <Motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="main-image-wrap"
+        >
+          <Motion.img
+            src={data.hero_image || "/static/news/llama-logo.png"}
+            alt="article"
+            className={!data.hero_image ? "default-logo" : ""}
+          />
+          <div className="image-overlay-grad" />
+        </Motion.div>
+      </div>
 
       <Motion.div
         initial={{ y: 40, opacity: 0 }}
@@ -141,17 +157,6 @@ function SummaryPage() {
         transition={{ delay: 0.3 }}
         className="summary-content"
       >
-        <div className="main-image-wrap">
-          <Motion.img
-            style={{ y: imageY }}
-            src={data.hero_image || "/static/news/llama-logo.png"}
-            alt="article"
-            className={!data.hero_image ? "default-logo" : ""}
-          />
-          <div className="image-overlay-grad" />
-          <div className="image-caption">Job market intelligence mapping for {data.article.title}.</div>
-        </div>
-
         <div className="ai-report-section">
           <div className="section-header">
             <div ref={badgeRef} className="report-badge">

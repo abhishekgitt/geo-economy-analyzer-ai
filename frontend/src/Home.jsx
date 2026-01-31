@@ -139,22 +139,16 @@ function Home() {
                 transition: { type: "spring", stiffness: 400, damping: 10 }
               }}
               whileTap={{ scale: 0.98 }}
-              className={`blog-card ${index === 0 ? 'featured-card' : ''}`}
+              className={`blog-card ${
+                // Pattern repeating every 7 items
+                (index % 7 === 0) ? 'span-2x2' :
+                  (index % 7 === 3) ? 'span-col-2' :
+                    (index % 7 === 5) ? 'span-row-2' :
+                      ''
+                }`}
               onClick={() => navigate(`/summary/${item.id}`)}
             >
-              <div className="card-image-wrap">
-                <img
-                  src={item.hero_image || "/static/news/llama-logo.png"}
-                  alt="article"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/static/news/default-job.png"; // Fallback if llama-logo fails too? Or just keep it.
-                  }}
-                  className={!item.hero_image ? "default-logo" : ""}
-                />
-                <div className="image-overlay" />
-              </div>
+
 
               <div className="card-content">
                 <div className="card-meta">
