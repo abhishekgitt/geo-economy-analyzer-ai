@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, BarChart3, Send, Loader2, Info } from "lucide-react";
+import { ArrowLeft, BarChart3, Send, Loader2, Info, Volume2, Square } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileMenu from "./ProfileMenu";
 import "./CompareCareers.css";
@@ -11,7 +11,41 @@ function CompareCareers() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const navigate = useNavigate();
+
+    // Cleanup TTS on unmount
+    useEffect(() => {
+        return () => {
+            window.speechSynthesis.cancel();
+        };
+    }, []);
+
+    const handleVoiceMode = () => {
+        if (isSpeaking) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+        } else {
+            if (!result?.summary) return;
+
+            const textToRead = result.summary
+                .replace(/[#*`_~\[\]]/g, '')
+                .replace(/\(https?:\/\/[^\)]+\)/g, '')
+                .replace(/<[^>]*>/g, '')
+                .replace(/\n+/g, '. ');
+
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+
+            window.speechSynthesis.speak(utterance);
+            setIsSpeaking(true);
+        }
+    };
 
     const handleCompare = async (e) => {
         e.preventDefault();
@@ -134,9 +168,30 @@ function CompareCareers() {
                         </div>
 
                         <div className="ai-summary glass">
-                            <div className="summary-header">
-                                <Info size={18} />
-                                <h3>AI Insight</h3>
+                            <div className="summary-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Info size={18} />
+                                    <h3>AI Insight</h3>
+                                </div>
+                                <button
+                                    onClick={handleVoiceMode}
+                                    className={`voice-mode-btn ${isSpeaking ? 'active' : ''}`}
+                                >
+                                    {isSpeaking ? (
+                                        <>
+                                            <div className="ping-wrapper">
+                                                <div className="ping-ring"></div>
+                                                <Square size={12} fill="currentColor" />
+                                            </div>
+                                            <span>Stop</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Volume2 size={14} />
+                                            <span>Read Insight</span>
+                                        </>
+                                    )}
+                                </button>
                             </div>
                             <p>{result.summary}</p>
                         </div>
