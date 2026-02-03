@@ -104,8 +104,19 @@ class JobSearchAPIView(APIView):
     def get(self, request):
         query = request.query_params.get("q", "")
         location = request.query_params.get("loc", "")
-        country = request.query_params.get("country", "gb")
+        country = request.query_params.get("country", "in") # Default to India
         page = request.query_params.get("page", 1)
 
         data = search_adzuna_jobs(query, location, country, page)
         return Response(data, status=status.HTTP_200_OK)
+
+
+from news.services.adzuna import get_trending_stats
+
+class TrendingJobsAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        country = request.query_params.get("country", "in")
+        stats = get_trending_stats(country=country)
+        return Response(stats, status=status.HTTP_200_OK)

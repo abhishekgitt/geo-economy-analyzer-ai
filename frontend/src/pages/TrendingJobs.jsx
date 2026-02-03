@@ -1,0 +1,146 @@
+import { useState, useEffect } from "react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
+import { TrendingUp, Globe, ArrowRight, Briefcase, BarChart2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import ProfileMenu from "../ProfileMenu"; // Adjusted path based on pages folder
+import "./TrendingJobs.css";
+
+function TrendingJobs() {
+    const [stats, setStats] = useState([]);
+    const [country, setCountry] = useState("in");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchStats();
+    }, [country]);
+
+    const fetchStats = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/api/jobs/trending/?country=${country}`);
+            if (!res.ok) throw new Error("Failed to fetch trending stats");
+            const data = await res.json();
+            setStats(data);
+        } catch (err) {
+            setError("Could not load trending data. Please try again.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: { type: "spring", stiffness: 100 }
+        }
+    };
+
+    return (
+        <div className="trending-page">
+            <nav className="summary-nav glass">
+                <button className="back-btn" onClick={() => navigate("/")}>
+                    <ArrowLeft size={18} />
+                    Hub
+                </button>
+                <div className="summary-actions">
+                    <button className="nav-link-btn active">
+                        <TrendingUp size={16} /> Trends
+                    </button>
+                    <div style={{ marginLeft: "10px" }}>
+                        <ProfileMenu />
+                    </div>
+                </div>
+            </nav>
+
+            <Motion.header
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="trending-header"
+            >
+                <h1>Market <span className="gradient-text">Pulse</span></h1>
+                <p>Real-time demand analysis across key technology sectors.</p>
+            </Motion.header>
+
+            <div className="trending-controls">
+                <div className="filter-pill">
+                    <Globe size={16} />
+                    <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                    >
+                        <option value="in">India</option>
+                        <option value="us">United States</option>
+                        <option value="gb">United Kingdom</option>
+                        <option value="ca">Canada</option>
+                        <option value="au">Australia</option>
+                    </select>
+                </div>
+            </div>
+
+            {error && <div className="status-container"><p className="error">{error}</p></div>}
+
+            {loading ? (
+                <div className="status-container">
+                    <div className="loader" />
+                    <p>Analyzing job markets...</p>
+                </div>
+            ) : (
+                <Motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="trending-grid"
+                >
+                    {stats.map((stat, index) => (
+                        <Motion.div
+                            key={stat.title}
+                            variants={itemVariants}
+                            className="trend-card"
+                            whileHover={{ scale: 1.02 }}
+                        >
+                            <div className="card-header">
+                                <div className="icon-box">
+                                    <BarChart2 size={20} />
+                                </div>
+                                <div className={`trend-growth ${stat.growth.startsWith('+') ? 'positive' : 'negative'}`}>
+                                    {stat.growth.startsWith('+') ? <TrendingUp size={12} /> : null}
+                                    {stat.growth}
+                                </div>
+                            </div>
+
+                            <div className="trend-stats">
+                                <span className="stat-value">{stat.count.toLocaleString()}</span>
+                                <span className="stat-label">{stat.title}</span>
+                            </div>
+
+                            <button
+                                className="card-action"
+                                onClick={() => navigate(`/jobs?q=${encodeURIComponent(stat.title)}&country=${country}`)}
+                            >
+                                View Openings <ArrowRight size={14} />
+                            </button>
+                        </Motion.div>
+                    ))}
+                </Motion.div>
+            )}
+        </div>
+    );
+}
+
+export default TrendingJobs;

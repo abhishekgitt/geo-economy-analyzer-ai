@@ -6,6 +6,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import ChatPage from "./ChatPage";
 import JobsPage from "./JobsPage";
+import TrendingJobs from "./pages/TrendingJobs";
 
 const isAuthenticated = () => {
   return !!localStorage.getItem("access_token");
@@ -57,6 +58,13 @@ function App() {
           path="/jobs"
           element={
             <PageWrapper><JobsPage /></PageWrapper>
+          }
+        />
+
+        <Route
+          path="/trending-jobs"
+          element={
+            <PageWrapper><TrendingJobs /></PageWrapper>
           }
         />
 
