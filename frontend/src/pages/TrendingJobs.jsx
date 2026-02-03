@@ -96,9 +96,21 @@ function TrendingJobs() {
             {error && <div className="status-container"><p className="error">{error}</p></div>}
 
             {loading ? (
-                <div className="status-container">
-                    <div className="loader" />
-                    <p>Analyzing job markets...</p>
+                <div className="trending-grid">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="skeleton-card">
+                            <div className="skeleton-shimmer" />
+                            <div className="skeleton-header">
+                                <div className="skeleton-icon" />
+                                <div className="skeleton-badge" />
+                            </div>
+                            <div className="skeleton-content">
+                                <div className="skeleton-text-lg" />
+                                <div className="skeleton-text-sm" />
+                            </div>
+                            <div className="skeleton-btn" />
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <Motion.div
