@@ -4,8 +4,7 @@ from google.genai.errors import ClientError
 
 # Model fallback order (cheap → strong)
 MODEL_PRIORITY = [
-    "gemini-2.0-flash-lite-preview",
-    "gemini-1.5-flash",
+    "gemini-2.5-flash-lite",
 ]
 
 def get_client():

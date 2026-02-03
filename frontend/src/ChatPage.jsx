@@ -69,8 +69,11 @@ function ChatPage() {
                     <ArrowLeft size={18} />
                     Back to Analysis
                 </button>
+                <div className="chat-nav-context">
+                    <Sparkles size={14} className="icon-pulse text-accent" />
+                    <span className="chat-nav-title">{data.article.title}</span>
+                </div>
                 <div className="header-badge">
-                    <Sparkles size={14} className="icon-pulse" />
                     <span>AI Interaction Mode</span>
                 </div>
             </nav>

@@ -182,11 +182,11 @@ function ChatPanel({ articleId, summaryId }) {
             <Motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="chat-send-btn"
+              className={`chat-send-btn ${question.trim() ? 'active' : ''}`}
               onClick={askAI}
               disabled={loading || count >= MAX_FREE || !question.trim()}
             >
-              <Send size={18} />
+              <Send size={18} strokeWidth={2.5} color="white" />
             </Motion.button>
           </div>
         </div>
