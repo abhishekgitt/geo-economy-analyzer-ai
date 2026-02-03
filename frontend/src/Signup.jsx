@@ -56,8 +56,8 @@ function Signup() {
             <div className="signup-logo">
               <UserPlus size={32} color="var(--accent)" />
             </div>
-            <h2>Join the Intelligence Hub</h2>
-            <p className="subtitle">Start your journey into AI-driven geoeconomic analysis</p>
+            <h2>Join the Trend Hub</h2>
+            <p className="subtitle">Start your journey into AI-driven job market analysis</p>
           </Motion.div>
 
           {error && (
@@ -70,46 +70,48 @@ function Signup() {
             </Motion.p>
           )}
 
-          <div className="input-group">
-            <div className="input-field">
-              <User size={18} className="input-icon" />
-              <input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+          <div className="auth-form">
+            <div className="input-group">
+              <div className="input-field">
+                <User size={18} className="input-icon" />
+                <input
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+
+              <div className="input-field">
+                <Mail size={18} className="input-icon" />
+                <input
+                  placeholder="Email (optional)"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="input-field">
+                <Lock size={18} className="input-icon" />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             </div>
 
-            <div className="input-field">
-              <Mail size={18} className="input-icon" />
-              <input
-                placeholder="Email (optional)"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="input-field">
-              <Lock size={18} className="input-icon" />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            <Motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleSignup}
+              disabled={loading}
+              className="signup-btn"
+            >
+              {loading ? "Creating Account..." : "Create Account"}
+              {!loading && <ChevronRight size={18} />}
+            </Motion.button>
           </div>
-
-          <Motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleSignup}
-            disabled={loading}
-            className="signup-btn"
-          >
-            {loading ? "Creating Account..." : "Create Account"}
-            {!loading && <ChevronRight size={18} />}
-          </Motion.button>
 
           <p className="login-prompt">
             Already have an account? <Link to="/login">Sign In</Link>
@@ -123,8 +125,8 @@ function Signup() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h3>Empowering <br />Decisions</h3>
-              <p>Join thousands of users leveraging AI to navigate the complex global economy.</p>
+              <h3>Empowering <br />Careers</h3>
+              <p>Join thousands of users leveraging AI to navigate the complex job market.</p>
               <div className="feature-badges">
                 <span className="badge">Spring Physics</span>
                 <span className="badge">Bento Grid</span>

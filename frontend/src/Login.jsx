@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
-import { ChevronRight, ShieldCheck, Mail, Lock } from "lucide-react";
+import { ChevronRight, ShieldCheck, User, Lock } from "lucide-react";
 import "./Login.css";
 
 function Login() {
@@ -57,7 +57,7 @@ function Login() {
               <ShieldCheck size={32} color="var(--accent)" />
             </div>
             <h2>Welcome back</h2>
-            <p className="subtitle">Enter your credentials to access insights</p>
+            <p className="subtitle">Enter your credentials to access the Trend Hub</p>
           </Motion.div>
 
           {error && (
@@ -70,38 +70,40 @@ function Login() {
             </Motion.p>
           )}
 
-          <div className="input-group">
-            <div className="input-field">
-              <Mail size={18} className="input-icon" />
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+          <div className="auth-form">
+            <div className="input-group">
+              <div className="input-field">
+                <User size={18} className="input-icon" />
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+
+              <div className="input-field">
+                <Lock size={18} className="input-icon" />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             </div>
 
-            <div className="input-field">
-              <Lock size={18} className="input-icon" />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            <Motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={login}
+              disabled={loading}
+              className="login-btn"
+            >
+              {loading ? "Authenticating..." : "Sign In"}
+              {!loading && <ChevronRight size={18} />}
+            </Motion.button>
           </div>
-
-          <Motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={login}
-            disabled={loading}
-            className="login-btn"
-          >
-            {loading ? "Authenticating..." : "Sign In"}
-            {!loading && <ChevronRight size={18} />}
-          </Motion.button>
 
           <p className="signup-prompt">
             Don’t have an account? <Link to="/signup">Create shared access</Link>
@@ -115,8 +117,8 @@ function Login() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h3>Global News <br />Analyzer AI</h3>
-              <p>Advanced cross-language intelligence for the modern geoeconomic landscape.</p>
+              <h3>Job Market <br />Trend Hub</h3>
+              <p>Advanced AI-driven insights for the modern employment landscape.</p>
               <div className="feature-badges">
                 <span className="badge">Spring Physics</span>
                 <span className="badge">Bento Grid</span>

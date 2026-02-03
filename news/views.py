@@ -120,3 +120,36 @@ class TrendingJobsAPIView(APIView):
         country = request.query_params.get("country", "in")
         stats = get_trending_stats(country=country)
         return Response(stats, status=status.HTTP_200_OK)
+
+from news.services.gemini import compare_careers
+import json
+
+class CareerComparisonAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        career1 = request.data.get("career1")
+        career2 = request.data.get("career2")
+
+        if not career1 or not career2:
+            return Response(
+                {"error": "Both career1 and career2 are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            comparison_text = compare_careers(career1, career2)
+            # Remove markdown code blocks if Gemini includes them
+            clean_json = comparison_text.strip()
+            if clean_json.startswith("```json"):
+                clean_json = clean_json[7:-3].strip()
+            elif clean_json.startswith("```"):
+                clean_json = clean_json[3:-3].strip()
+            
+            data = json.loads(clean_json)
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to generate comparison: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

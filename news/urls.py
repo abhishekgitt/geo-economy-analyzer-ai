@@ -5,6 +5,7 @@ from news.views import (
     RegisterAPIView,
     JobSearchAPIView,
     TrendingJobsAPIView,
+    CareerComparisonAPIView,
 )
 
 from rest_framework_simplejwt.views import (
@@ -21,4 +22,5 @@ urlpatterns = [
     path("api/chat/", ArticleChatAPIView.as_view()),
     path("api/jobs/", JobSearchAPIView.as_view()),
     path("api/jobs/trending/", TrendingJobsAPIView.as_view()),
+    path("api/compare/", CareerComparisonAPIView.as_view()),
 ]

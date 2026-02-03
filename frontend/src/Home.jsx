@@ -123,6 +123,19 @@ function Home() {
               <Briefcase size={18} />
               Explore Job Board
             </button>
+            <button
+              className="nav-link-btn"
+              onClick={() => navigate('/compare')}
+              style={{
+                padding: '12px 24px',
+                fontSize: '15px',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              <BarChart3 size={18} />
+              Compare Career
+            </button>
           </div>
         </div>
 

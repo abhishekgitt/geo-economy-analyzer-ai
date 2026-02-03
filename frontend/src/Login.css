@@ -45,17 +45,25 @@
   font-size: 16px;
 }
 
+.auth-form {
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-bottom: 32px;
+  width: 100%;
 }
 
 .input-field {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .input-icon {
@@ -74,6 +82,7 @@
   background: rgba(255, 255, 255, 0.05);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--text-primary);
+  box-sizing: border-box;
 }
 
 .input-field input:focus {
@@ -93,6 +102,8 @@
   justify-content: center;
   gap: 8px;
   margin-bottom: 24px;
+  box-sizing: border-box;
+  /* Ensure padding doesn't affect width */
 }
 
 .signup-prompt {

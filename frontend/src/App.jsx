@@ -7,6 +7,7 @@ import Signup from "./Signup";
 import ChatPage from "./ChatPage";
 import JobsPage from "./JobsPage";
 import TrendingJobs from "./pages/TrendingJobs";
+import CompareCareers from "./CompareCareers";
 
 const isAuthenticated = () => {
   return !!localStorage.getItem("access_token");
@@ -65,6 +66,13 @@ function App() {
           path="/trending-jobs"
           element={
             <PageWrapper><TrendingJobs /></PageWrapper>
+          }
+        />
+
+        <Route
+          path="/compare"
+          element={
+            <PageWrapper><CompareCareers /></PageWrapper>
           }
         />
 

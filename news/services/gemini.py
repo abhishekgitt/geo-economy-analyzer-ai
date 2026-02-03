@@ -69,3 +69,44 @@ def article_conversation(article_text: str, user_question: str) -> str:
 
     # If all models fail
     raise RuntimeError("All Gemini models exhausted") from last_error
+
+def compare_careers(career1: str, career2: str) -> str:
+    prompt = f"""
+    Compare the following two careers: "{career1}" and "{career2}".
+    Provide a detailed comparison focusing on:
+    - Average Salary
+    - Key Skills Required
+    - Future Demand
+    - Growth Potential
+    - Work-Life Balance
+
+    Return the result as a structured JSON object with the following format:
+    {{
+        "comparison": [
+            {{
+                "feature": "Average Salary",
+                "career1": "value for {career1}",
+                "career2": "value for {career2}"
+            }},
+            ...
+        ],
+        "summary": "A brief overall summary of which might be better in what scenario."
+    }}
+    Ensure the output is ONLY the JSON object, NO markdown formatting or extra text.
+    """
+
+    last_error = None
+    for model in MODEL_PRIORITY:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
+            return response.text
+        except ClientError as e:
+            last_error = e
+            if any(keyword in str(e).lower() for keyword in ("quota", "429", "not found")):
+                continue
+            raise
+    
+    raise RuntimeError("All Gemini models exhausted") from last_error
