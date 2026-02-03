@@ -14,25 +14,27 @@ MODEL_PRIORITY = [
 def article_conversation(article_text: str, user_question: str) -> str:
 
     prompt = f"""
-   You are a helpful assistant.
+    You are a helpful assistant.
 
-I will give you a news article written in Markdown.
-Your job is to:
+    I will give you a news article written in Markdown.
+    Your job is to:
 
-- Explain the content in simple words
-- Help me understand what happened
-- Answer follow-up questions about the article
-- Keep the tone friendly and conversational
-- Do NOT rewrite the article
-- Do NOT use heavy Markdown formatting
+    - Explain the content in simple words
+    - Help me understand what happened
+    - Answer follow-up questions about the article
+    - Keep the tone friendly and conversational
+    - Use emojis to make it engaging
+    - Keep explanations simple and easy to understand
+    - Do NOT rewrite the article
+    - Do NOT use heavy Markdown formatting
 
-Here is the article:
-    {article_text}
+    Here is the article:
+        {article_text}
 
-    This is the User question about the article:
-    {user_question}
+        This is the User question about the article:
+        {user_question}
 
-    Answer in a clear, calm and helpful way.
+        Answer in a clear, calm and helpful way.
     """
 
     last_error = None

@@ -11,6 +11,7 @@ from news.models import (
 )
 from news.serializers import SummaryPageSerializer
 from news.services.gemini import article_conversation
+from news.services.adzuna import search_adzuna_jobs
 
 
 
@@ -94,3 +95,17 @@ class ArticleChatAPIView(APIView):
         )
 
         return Response({"reply": reply}, status=status.HTTP_200_OK)
+
+
+# Job Search Proxy
+class JobSearchAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        query = request.query_params.get("q", "")
+        location = request.query_params.get("loc", "")
+        country = request.query_params.get("country", "gb")
+        page = request.query_params.get("page", 1)
+
+        data = search_adzuna_jobs(query, location, country, page)
+        return Response(data, status=status.HTTP_200_OK)

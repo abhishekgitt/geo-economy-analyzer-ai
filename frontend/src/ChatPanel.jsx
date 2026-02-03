@@ -7,19 +7,21 @@ import { Send, Sparkles, MessageSquare } from "lucide-react";
 import "./ChatPanel.css";
 
 function ChatPanel({ articleId, summaryId }) {
+  const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState("");
-  const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
 
-  const MAX_FREE = 5;
+  const MAX_FREE = 10;
   const token = localStorage.getItem("access_token");
 
   const askAI = async () => {
     if (!question.trim() || loading || count >= MAX_FREE) return;
 
+    const userMsg = { role: "user", content: question };
+    setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
-    setReply("");
+    setQuestion("");
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/chat/", {
@@ -31,16 +33,17 @@ function ChatPanel({ articleId, summaryId }) {
         body: JSON.stringify({
           article_id: articleId,
           summary_id: summaryId,
-          question,
+          question: question,
         }),
       });
 
       const data = await res.json();
-      setReply(data?.reply || "⚠️ No response from AI.");
+      const replyContent = data?.reply || "⚠️ No response from AI.";
+
+      setMessages((prev) => [...prev, { role: "ai", content: replyContent }]);
       setCount((c) => c + 1);
-      setQuestion("");
     } catch {
-      setReply("⚠️ Something went wrong. Please try again.");
+      setMessages((prev) => [...prev, { role: "ai", content: "⚠️ Something went wrong. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -55,8 +58,40 @@ function ChatPanel({ articleId, summaryId }) {
             <h3>Ask Intelligence</h3>
           </div>
           <span className="usage-indicator">
-            {count}/{MAX_FREE} Free Queries Left
+            {count}/{MAX_FREE} Queries
           </span>
+        </div>
+
+        <div className="chat-history">
+          <AnimatePresence>
+            {messages.map((msg, idx) => (
+              <Motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`chat-bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble markdown-body'}`}
+              >
+                {msg.role === 'ai' ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )}
+              </Motion.div>
+            ))}
+            {loading && (
+              <Motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="ai-thinking"
+              >
+                <div className="pulse-dots">
+                  <span>.</span><span>.</span><span>.</span>
+                </div>
+              </Motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="chat-input-wrapper">
@@ -84,37 +119,6 @@ function ChatPanel({ articleId, summaryId }) {
             <Send size={18} />
           </Motion.button>
         </div>
-
-        <AnimatePresence mode="wait">
-          {loading && (
-            <Motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="ai-thinking"
-            >
-              <div className="pulse-dots">
-                <span>.</span><span>.</span><span>.</span>
-              </div>
-              Synthesizing insights...
-            </Motion.div>
-          )}
-
-          {reply && !loading && (
-            <Motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="ai-reply markdown-body"
-            >
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeSanitize]}
-              >
-                {reply}
-              </ReactMarkdown>
-            </Motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );

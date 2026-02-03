@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Globe, BarChart3, Clock } from "lucide-react";
+import { TrendingUp, Globe, BarChart3, Clock, Briefcase } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import "./Home.css";
 
@@ -114,6 +114,16 @@ function Home() {
           </div>
           <h1>AI Job Market <br /><span className="gradient-text">Trend Hub</span></h1>
           <p>Advanced AI-driven analysis of global employment and skill shifts.</p>
+          <div style={{ marginTop: '24px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button
+              className="nav-link-btn active"
+              onClick={() => navigate('/jobs')}
+              style={{ padding: '12px 24px', fontSize: '15px' }}
+            >
+              <Briefcase size={18} />
+              Explore Job Board
+            </button>
+          </div>
         </div>
 
         <div className="header-right" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>

@@ -5,6 +5,7 @@ import SummaryPage from "./SummaryPage";
 import Login from "./Login";
 import Signup from "./Signup";
 import ChatPage from "./ChatPage";
+import JobsPage from "./JobsPage";
 
 const isAuthenticated = () => {
   return !!localStorage.getItem("access_token");
@@ -49,6 +50,13 @@ function App() {
             <ProtectedRoute>
               <PageWrapper><SummaryPage /></PageWrapper>
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/jobs"
+          element={
+            <PageWrapper><JobsPage /></PageWrapper>
           }
         />
 
