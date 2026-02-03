@@ -128,18 +128,8 @@ function Home() {
 
         <div className="header-right" style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10, display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
-            className="nav-link-btn"
+            className="nav-trends-btn"
             onClick={() => navigate('/trending-jobs')}
-            style={{
-              padding: '8px 16px',
-              fontSize: '14px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
           >
             <TrendingUp size={16} /> Trends
           </button>

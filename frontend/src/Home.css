@@ -230,11 +230,50 @@
     grid-template-columns: 1fr;
   }
 
-  .span-col-2,
-  .span-row-2,
   .span-2x2,
   .featured-card {
     grid-column: span 1;
     grid-row: auto;
   }
+}
+
+/* Premium Trends Button */
+.nav-trends-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.nav-trends-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(64, 196, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.nav-trends-btn:hover {
+  background: rgba(64, 196, 255, 0.1);
+  border-color: rgba(64, 196, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 196, 255, 0.2);
+  color: #40c4ff;
+}
+
+.nav-trends-btn:hover::before {
+  transform: translateX(100%);
 }
