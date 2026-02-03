@@ -3,6 +3,7 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { Search, MapPin, Briefcase, DollarSign, ExternalLink, Globe, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileMenu from "./ProfileMenu";
+import CustomSelect from "./CustomSelect";
 import "./JobsPage.css";
 
 function JobsPage() {
@@ -13,6 +14,14 @@ function JobsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    const countryOptions = [
+        { value: "in", label: "India" },
+        { value: "us", label: "USA" },
+        { value: "gb", label: "UK" },
+        { value: "ca", label: "Canada" },
+        { value: "au", label: "Australia" }
+    ];
 
     const fetchJobs = async () => {
         setLoading(true);
@@ -63,8 +72,8 @@ function JobsPage() {
                 animate={{ y: 0, opacity: 1 }}
                 className="jobs-header"
             >
-                <h1>India <span className="gradient-text">Tech Jobs</span></h1>
-                <p>Curated tech opportunities in India and beyond.</p>
+                <h1>{countryOptions.find(opt => opt.value === country)?.label || "Global"} <span className="gradient-text">Tech Jobs</span></h1>
+                <p>Curated tech opportunities in {countryOptions.find(opt => opt.value === country)?.label || "the region"} and beyond.</p>
             </Motion.header>
 
             <form className="search-container" onSubmit={handleSearch}>
@@ -86,19 +95,14 @@ function JobsPage() {
                         onChange={(e) => setLocation(e.target.value)}
                     />
                 </div>
-                <div className="search-box" style={{ maxWidth: '120px' }}>
-                    <Globe size={20} />
-                    <select
+                <div className="search-box" style={{ maxWidth: '180px', padding: 0, border: 'none', background: 'transparent' }}>
+                    <CustomSelect
+                        options={countryOptions}
                         value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', width: '100%', outline: 'none' }}
-                    >
-                        <option value="in">India</option>
-                        <option value="us">USA</option>
-                        <option value="gb">UK</option>
-                        <option value="ca">Canada</option>
-                        <option value="au">Australia</option>
-                    </select>
+                        onChange={setCountry}
+                        icon={Globe}
+                        placeholder="Country"
+                    />
                 </div>
                 <button type="submit" className="search-btn">Find Jobs</button>
             </form>

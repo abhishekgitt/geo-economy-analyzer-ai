@@ -16,6 +16,9 @@
     justify-content: center;
     max-width: 800px;
     margin: 0 auto 40px;
+    position: relative;
+    z-index: 50;
+    /* Ensure dropdowns appear above job grid */
 }
 
 .search-box {

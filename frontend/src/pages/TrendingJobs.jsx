@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Globe, ArrowRight, Briefcase, BarChart2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ProfileMenu from "../ProfileMenu"; // Adjusted path based on pages folder
+import ProfileMenu from "../ProfileMenu";
+import CustomSelect from "../CustomSelect";
 import "./TrendingJobs.css";
 
 function TrendingJobs() {
@@ -11,6 +12,14 @@ function TrendingJobs() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    const countryOptions = [
+        { value: "in", label: "India" },
+        { value: "us", label: "United States" },
+        { value: "gb", label: "United Kingdom" },
+        { value: "ca", label: "Canada" },
+        { value: "au", label: "Australia" }
+    ];
 
     useEffect(() => {
         fetchStats();
@@ -78,19 +87,12 @@ function TrendingJobs() {
             </Motion.header>
 
             <div className="trending-controls">
-                <div className="filter-pill">
-                    <Globe size={16} />
-                    <select
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                    >
-                        <option value="in">India</option>
-                        <option value="us">United States</option>
-                        <option value="gb">United Kingdom</option>
-                        <option value="ca">Canada</option>
-                        <option value="au">Australia</option>
-                    </select>
-                </div>
+                <CustomSelect
+                    options={countryOptions}
+                    value={country}
+                    onChange={setCountry}
+                    icon={Globe}
+                />
             </div>
 
             {error && <div className="status-container"><p className="error">{error}</p></div>}
