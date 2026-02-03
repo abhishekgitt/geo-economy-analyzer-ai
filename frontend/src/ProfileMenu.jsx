@@ -4,6 +4,8 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { User, LogOut, LogIn, UserPlus } from "lucide-react";
 import "./ProfileMenu.css";
 
+import defaultProfile from "./assets/default-profile.png";
+
 function ProfileMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
@@ -53,8 +55,13 @@ function ProfileMenu() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="profile-btn"
                 aria-label="Profile Menu"
+                style={{ padding: 0, overflow: 'hidden' }}
             >
-                <User size={20} />
+                <img
+                    src={defaultProfile}
+                    alt="User"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
             </button>
 
             <AnimatePresence>
