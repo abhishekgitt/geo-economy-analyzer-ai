@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { motion as Motion, useScroll, useSpring, useTransform } from "framer-motion";
 import anime from "animejs";
-import { ArrowLeft, Clock, Share2, Bookmark, Sparkles } from "lucide-react";
+import { ArrowLeft, Clock, Share2, Bookmark, Sparkles, Volume2, Square } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import "./SummaryPage.css"
 
@@ -16,6 +16,7 @@ function SummaryPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const badgeRef = useRef(null);
 
   const navigate = useNavigate();
@@ -29,6 +30,40 @@ function SummaryPage() {
   });
 
   const imageY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
+
+  // Handle cleanup on unmount
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const handleVoiceMode = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      if (!data?.ai_summary) return;
+
+      const utterance = new SpeechSynthesisUtterance(data.ai_summary);
+      // Optional: Select a decent voice if available
+      const voices = window.speechSynthesis.getVoices();
+      // Try to find a premium English voice
+      const preferredVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+      };
+
+      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    }
+  };
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/summaries/", {
@@ -91,6 +126,14 @@ function SummaryPage() {
           Back to Hub
         </button>
         <div className="summary-actions">
+          <button
+            className="action-icon"
+            onClick={handleVoiceMode}
+            title={isSpeaking ? "Stop Reading" : "Read Aloud"}
+            style={isSpeaking ? { color: '#40c4ff', background: 'rgba(64,196,255,0.1)' } : {}}
+          >
+            {isSpeaking ? <Square size={16} fill="currentColor" /> : <Volume2 size={18} />}
+          </button>
           <button className="action-icon"><Bookmark size={18} /></button>
           <button className="action-icon"><Share2 size={18} /></button>
           <div style={{ marginLeft: "10px" }}>
