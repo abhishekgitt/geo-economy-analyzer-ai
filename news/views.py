@@ -10,7 +10,7 @@ from news.models import (
     Topic,
 )
 from news.serializers import SummaryPageSerializer
-from news.services.gemini import article_conversation
+from news.services.gemini import article_conversation, general_conversation, compare_careers
 from news.services.adzuna import search_adzuna_jobs
 
 
@@ -87,14 +87,18 @@ class ArticleChatAPIView(APIView):
 
         # Removed Topic Permission Check - Allow any authenticated user to chat about any article
 
-        article_text = summary.article.snippet or summary.article.title
-
-        reply = article_conversation(
-            article_text=article_text,
-            user_question=user_question
-        )
-
-        return Response({"reply": reply}, status=status.HTTP_200_OK)
+        try:
+            article_text = summary.article.snippet or summary.article.title
+            reply = article_conversation(
+                article_text=article_text,
+                user_question=user_question
+            )
+            return Response({"reply": reply}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"AI service failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 # Job Search Proxy
@@ -151,5 +155,26 @@ class CareerComparisonAPIView(APIView):
         except Exception as e:
             return Response(
                 {"error": f"Failed to generate comparison: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class GeneralChatAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_question = request.data.get("question")
+
+        if not user_question:
+            return Response(
+                {"error": "Question is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            reply = general_conversation(user_question=user_question)
+            return Response({"reply": reply}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": f"AI service failed: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

@@ -3,14 +3,17 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, MessageSquare } from "lucide-react";
+import { Send, Sparkles, MessageSquare, Volume2, Square } from "lucide-react";
 import "./ChatPanel.css";
+import { useEffect, useRef } from "react";
 
 function ChatPanel({ articleId, summaryId }) {
   const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
+  const [speakingIdx, setSpeakingIdx] = useState(null);
+  const chatEndRef = useRef(null);
 
   const MAX_FREE = 10;
   const token = localStorage.getItem("access_token");
@@ -38,14 +41,56 @@ function ChatPanel({ articleId, summaryId }) {
       });
 
       const data = await res.json();
-      const replyContent = data?.reply || "⚠️ No response from AI.";
 
+      if (!res.ok) {
+        setMessages((prev) => [...prev, { role: "ai", content: `⚠️ Error: ${data.error || "Failed to get AI response"}` }]);
+        return;
+      }
+
+      const replyContent = data?.reply || "⚠️ AI returned an empty response.";
       setMessages((prev) => [...prev, { role: "ai", content: replyContent }]);
       setCount((c) => c + 1);
-    } catch {
-      setMessages((prev) => [...prev, { role: "ai", content: "⚠️ Something went wrong. Please try again." }]);
+    } catch (err) {
+      setMessages((prev) => [...prev, { role: "ai", content: "⚠️ Connection failed. Please check your network and try again." }]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const handleSpeak = (text, idx) => {
+    if (speakingIdx === idx) {
+      window.speechSynthesis.cancel();
+      setSpeakingIdx(null);
+    } else {
+      window.speechSynthesis.cancel();
+
+      const textToRead = text
+        .replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '') // Remove emojis
+        .replace(/[#*`_~\[\]]/g, '')
+        .replace(/\(https?:\/\/[^\)]+\)/g, '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/\n+/g, '. ');
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+      if (preferredVoice) utterance.voice = preferredVoice;
+
+      utterance.onend = () => setSpeakingIdx(null);
+      utterance.onerror = () => setSpeakingIdx(null);
+
+      window.speechSynthesis.speak(utterance);
+      setSpeakingIdx(idx);
     }
   };
 
@@ -72,9 +117,32 @@ function ChatPanel({ articleId, summaryId }) {
                 className={`chat-bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble markdown-body'}`}
               >
                 {msg.role === 'ai' ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
-                    {msg.content}
-                  </ReactMarkdown>
+                  <div className="ai-message-wrapper">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+                      {msg.content}
+                    </ReactMarkdown>
+                    <div className="ai-message-footer">
+                      <button
+                        className={`chat-voice-btn ${speakingIdx === idx ? 'active' : ''}`}
+                        onClick={() => handleSpeak(msg.content, idx)}
+                      >
+                        {speakingIdx === idx ? (
+                          <>
+                            <div className="ping-wrapper small">
+                              <div className="ping-ring small"></div>
+                              <Square size={10} fill="currentColor" />
+                            </div>
+                            <span>Stop Reading</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 size={12} />
+                            <span>Read Aloud</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   msg.content
                 )}
@@ -91,33 +159,36 @@ function ChatPanel({ articleId, summaryId }) {
                 </div>
               </Motion.div>
             )}
+            <div ref={chatEndRef} />
           </AnimatePresence>
         </div>
 
         <div className="chat-input-wrapper">
-          <MessageSquare size={18} className="input-icon" />
-          <input
-            className="chat-input"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                askAI();
-              }
-            }}
-            placeholder="What else would you like to know?"
-            disabled={count >= MAX_FREE}
-          />
-          <Motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="chat-send-btn"
-            onClick={askAI}
-            disabled={loading || count >= MAX_FREE || !question.trim()}
-          >
-            <Send size={18} />
-          </Motion.button>
+          <div className="chat-input-container">
+            <MessageSquare size={18} className="input-icon" />
+            <input
+              className="chat-input"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  askAI();
+                }
+              }}
+              placeholder="Message Job Market AI..."
+              disabled={count >= MAX_FREE}
+            />
+            <Motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="chat-send-btn"
+              onClick={askAI}
+              disabled={loading || count >= MAX_FREE || !question.trim()}
+            >
+              <Send size={18} />
+            </Motion.button>
+          </div>
         </div>
       </div>
     </div>

@@ -2,16 +2,19 @@ import os
 from google import genai
 from google.genai.errors import ClientError
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
 # Model fallback order (cheap → strong)
 MODEL_PRIORITY = [
-    "gemini-2.5-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-3-flash",
+    "gemini-2.0-flash-lite-preview",
+    "gemini-1.5-flash",
 ]
 
+def get_client():
+    return genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 def article_conversation(article_text: str, user_question: str) -> str:
+    client = get_client()
+    if not os.getenv("GEMINI_API_KEY"):
+        raise RuntimeError("GEMINI_API_KEY is not set in environment variables.")
 
     prompt = f"""
     You are a helpful assistant.
@@ -40,28 +43,28 @@ def article_conversation(article_text: str, user_question: str) -> str:
     last_error = None
 
     for model in MODEL_PRIORITY:
-        
         try:
-            print(f"Trying Gemini model: {model}")
-
+            print(f"DEBUG: Trying Gemini model: {model}")
             response = client.models.generate_content(
                 model=model,
                 contents=prompt
             )
-
-            # Success 
             return response.text
 
-        except ClientError as e:
+        except Exception as e:
             last_error = e
             error_msg = str(e).lower()
+            print(f"DEBUG: Model {model} failed with error: {error_msg}")
 
-            print(f"Model failed: {model}")
+            # If it's an API Key error, we should stop immediately and tell the user
+            if "api_key_invalid" in error_msg or "invalid api key" in error_msg or "401" in error_msg:
+                 raise RuntimeError(f"Invalid Gemini API Key. Please check your .env file. Details: {error_msg}")
 
             # Quota / To many request / rate   → try next model
-            RETRY_ERRORS = ("quota","429","not found")
+            RETRY_ERRORS = ("quota","429","not found", "limit")
 
             if any(keyword in error_msg for keyword in RETRY_ERRORS):
+                print(f"DEBUG: Potentially a quota/limit issue with {model}, trying next...")
                 continue
 
             # Any other error → stop immediately
@@ -71,6 +74,7 @@ def article_conversation(article_text: str, user_question: str) -> str:
     raise RuntimeError("All Gemini models exhausted") from last_error
 
 def compare_careers(career1: str, career2: str) -> str:
+    client = get_client()
     prompt = f"""
     Compare the following two careers: "{career1}" and "{career2}".
     Provide a detailed comparison focusing on:
@@ -98,14 +102,63 @@ def compare_careers(career1: str, career2: str) -> str:
     last_error = None
     for model in MODEL_PRIORITY:
         try:
+            print(f"DEBUG: Trying Gemini model: {model} (comparison)")
             response = client.models.generate_content(
                 model=model,
                 contents=prompt
             )
             return response.text
-        except ClientError as e:
+        except Exception as e:
             last_error = e
-            if any(keyword in str(e).lower() for keyword in ("quota", "429", "not found")):
+            error_msg = str(e).lower()
+            print(f"DEBUG: Model {model} (comparison) failed: {error_msg}")
+            
+            if any(keyword in error_msg for keyword in ("quota", "429", "not found", "limit")):
+                print(f"DEBUG: Potentially a quota/limit issue with {model}, trying next...")
+                continue
+            raise
+    
+    raise RuntimeError("All Gemini models exhausted") from last_error
+
+def general_conversation(user_question: str) -> str:
+    client = get_client()
+    if not os.getenv("GEMINI_API_KEY"):
+        raise RuntimeError("GEMINI_API_KEY is not set in environment variables.")
+
+    prompt = f"""
+    You are a professional Job Market & Career Assistant for the "Job Market Trend Hub".
+    
+    Your goal is to:
+    - Help users with career advice, interview preparation, and skill development
+    - Provide insights into job market trends and salary expectations
+    - Explain complex economic concepts in simple terms
+    - Maintain a professional, encouraging, and helpful tone
+    - Use emojis to keep it engaging
+    - Keep responses clear, concise, and easy to read
+
+    User Question: {user_question}
+
+    Provide a helpful and detailed response to guide the user.
+    """
+
+    last_error = None
+    for model in MODEL_PRIORITY:
+        try:
+            print(f"DEBUG: Trying Gemini model: {model} (general chat)")
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
+            return response.text
+        except Exception as e:
+            last_error = e
+            error_msg = str(e).lower()
+            print(f"DEBUG: Model {model} (general chat) failed: {error_msg}")
+            
+            if "api_key_invalid" in error_msg or "invalid api key" in error_msg or "401" in error_msg:
+                 raise RuntimeError(f"Invalid Gemini API Key. Details: {error_msg}")
+
+            if any(keyword in error_msg for keyword in ("quota", "429", "not found", "limit")):
                 continue
             raise
     

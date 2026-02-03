@@ -8,6 +8,7 @@ import ChatPage from "./ChatPage";
 import JobsPage from "./JobsPage";
 import TrendingJobs from "./pages/TrendingJobs";
 import CompareCareers from "./CompareCareers";
+import GeneralChat from "./GeneralChat";
 
 const isAuthenticated = () => {
   return !!localStorage.getItem("access_token");
@@ -73,6 +74,15 @@ function App() {
           path="/compare"
           element={
             <PageWrapper><CompareCareers /></PageWrapper>
+          }
+        />
+
+        <Route
+          path="/ai-chat"
+          element={
+            <ProtectedRoute>
+              <PageWrapper><GeneralChat /></PageWrapper>
+            </ProtectedRoute>
           }
         />
 

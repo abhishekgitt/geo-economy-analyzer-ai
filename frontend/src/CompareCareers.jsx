@@ -29,6 +29,7 @@ function CompareCareers() {
             if (!result?.summary) return;
 
             const textToRead = result.summary
+                .replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '') // Remove emojis
                 .replace(/[#*`_~\[\]]/g, '')
                 .replace(/\(https?:\/\/[^\)]+\)/g, '')
                 .replace(/<[^>]*>/g, '')

@@ -47,6 +47,7 @@ function SummaryPage() {
 
       // Clean text: aggressive markdown stripping for speech
       let textToRead = data.ai_summary
+        .replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, '') // Remove emojis
         .replace(/[#*`_~\[\]]/g, '') // Remove simple markdown symbols
         .replace(/\(https?:\/\/[^\)]+\)/g, '') // Remove standard markdown URLs
         .replace(/<[^>]*>/g, '') // Remove any HTML tags

@@ -81,10 +81,6 @@ function ChatPage() {
                 transition={{ delay: 0.2 }}
                 className="chat-page-content"
             >
-                <div style={{ marginBottom: '20px' }}>
-                    <h2>{data.article.title}</h2>
-                    <p style={{ color: 'var(--text-secondary)' }}>Interactive intelligence session</p>
-                </div>
 
                 <ChatPanel
                     articleId={data.article.id}

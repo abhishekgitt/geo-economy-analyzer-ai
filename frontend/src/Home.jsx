@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Globe, BarChart3, Clock, Briefcase } from "lucide-react";
+import { TrendingUp, Globe, BarChart3, Clock, Briefcase, Sparkles } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import "./Home.css";
 
@@ -135,6 +135,20 @@ function Home() {
             >
               <BarChart3 size={18} />
               Compare Career
+            </button>
+            <button
+              className="nav-link-btn"
+              onClick={() => navigate('/ai-chat')}
+              style={{
+                padding: '12px 24px',
+                fontSize: '15px',
+                background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(79, 70, 229, 0.2) 100%)',
+                border: '1px solid rgba(147, 51, 234, 0.3)',
+                boxShadow: '0 0 20px rgba(147, 51, 234, 0.1)'
+              }}
+            >
+              <Sparkles size={18} style={{ color: '#a855f7' }} />
+              Job Market AI
             </button>
           </div>
         </div>
