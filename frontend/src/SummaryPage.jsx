@@ -45,7 +45,16 @@ function SummaryPage() {
     } else {
       if (!data?.ai_summary) return;
 
-      const utterance = new SpeechSynthesisUtterance(data.ai_summary);
+      // Clean text: aggressive markdown stripping for speech
+      let textToRead = data.ai_summary
+        .replace(/[#*`_~\[\]]/g, '') // Remove simple markdown symbols
+        .replace(/\(https?:\/\/[^\)]+\)/g, '') // Remove standard markdown URLs
+        .replace(/<[^>]*>/g, '') // Remove any HTML tags
+        .replace(/^\s*-\s+/gm, '... ') // Replace bullets with distinct pause
+        .replace(/[:\-]/g, ' ') // Replace remaining colons/dashes with space
+        .replace(/\n+/g, '. '); // Replace newlines with full stops
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
       // Optional: Select a decent voice if available
       const voices = window.speechSynthesis.getVoices();
       // Try to find a premium English voice
@@ -127,12 +136,50 @@ function SummaryPage() {
         </button>
         <div className="summary-actions">
           <button
-            className="action-icon"
             onClick={handleVoiceMode}
-            title={isSpeaking ? "Stop Reading" : "Read Aloud"}
-            style={isSpeaking ? { color: '#40c4ff', background: 'rgba(64,196,255,0.1)' } : {}}
+            style={{
+              height: '40px',
+              padding: '0 20px',
+              borderRadius: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: isSpeaking ? 'rgba(64, 196, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+              border: `1px solid ${isSpeaking ? 'rgba(64, 196, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
+              color: isSpeaking ? '#40c4ff' : 'var(--text-secondary)',
+              fontSize: '13px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => {
+              if (!isSpeaking) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.color = 'white';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSpeaking) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+              }
+            }}
           >
-            {isSpeaking ? <Square size={16} fill="currentColor" /> : <Volume2 size={18} />}
+            {isSpeaking ? (
+              <>
+                <span style={{ position: 'relative', display: 'flex' }}>
+                  <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#40c4ff', opacity: 0.4, animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite' }}></span>
+                  <Square size={14} fill="currentColor" />
+                </span>
+                <span>Stop Reading</span>
+              </>
+            ) : (
+              <>
+                <Volume2 size={16} />
+                <span>Read Summary</span>
+              </>
+            )}
           </button>
           <button className="action-icon"><Bookmark size={18} /></button>
           <button className="action-icon"><Share2 size={18} /></button>
