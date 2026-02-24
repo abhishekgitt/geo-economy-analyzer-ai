@@ -7,6 +7,7 @@ from news.views import (
     TrendingJobsAPIView,
     CareerComparisonAPIView,
     GeneralChatAPIView,
+    QdrantStatusAPIView,
 )
 
 from rest_framework_simplejwt.views import (
@@ -25,4 +26,5 @@ urlpatterns = [
     path("api/jobs/trending/", TrendingJobsAPIView.as_view()),
     path("api/compare/", CareerComparisonAPIView.as_view()),
     path("api/general-chat/", GeneralChatAPIView.as_view(), name="general_chat"),
+    path("api/qdrant-status/", QdrantStatusAPIView.as_view(), name="qdrant_status"),
 ]

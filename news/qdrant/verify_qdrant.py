@@ -1,4 +1,9 @@
 import os
+import sys
+
+# Add project root to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from news.services.qdrant_service import QdrantService
 from news.services.gemini import general_conversation
 from dotenv import load_dotenv

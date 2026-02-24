@@ -14,9 +14,26 @@ function GeneralChatPanel() {
     const [question, setQuestion] = useState("");
     const [loading, setLoading] = useState(false);
     const [speakingIdx, setSpeakingIdx] = useState(null);
+    const [qdrantStatus, setQdrantStatus] = useState("checking");
     const chatEndRef = useRef(null);
 
     const token = localStorage.getItem("access_token");
+
+    const fetchQdrantStatus = async () => {
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/qdrant-status/");
+            const data = await res.json();
+            setQdrantStatus(data.status);
+        } catch (err) {
+            setQdrantStatus("unavailable");
+        }
+    };
+
+    useEffect(() => {
+        fetchQdrantStatus();
+        const interval = setInterval(fetchQdrantStatus, 30000); // Check every 30s
+        return () => clearInterval(interval);
+    }, []);
 
     const askAI = async () => {
         if (!question.trim() || loading) return;
@@ -92,6 +109,10 @@ function GeneralChatPanel() {
                     <div className="flex-center gap-2">
                         <Sparkles size={18} className="text-secondary" />
                         <h3>Job Market AI</h3>
+                    </div>
+                    <div className={`qdrant-status-indicator ${qdrantStatus}`}>
+                        <div className="status-dot"></div>
+                        <span>Live News: {qdrantStatus === 'connected' ? 'Connected' : qdrantStatus === 'checking' ? 'Checking...' : 'Unavailable'}</span>
                     </div>
                 </div>
 

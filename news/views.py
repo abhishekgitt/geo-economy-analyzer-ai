@@ -178,3 +178,15 @@ class GeneralChatAPIView(APIView):
                 {"error": f"AI service failed: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+class QdrantStatusAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        from news.services.qdrant_service import QdrantService
+        try:
+            qdrant = QdrantService()
+            # Try a simple light-weight operation
+            qdrant.client.get_collections()
+            return Response({"status": "connected"}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({"status": "unavailable"}, status=status.HTTP_200_OK)
