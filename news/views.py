@@ -171,8 +171,8 @@ class GeneralChatAPIView(APIView):
             )
 
         try:
-            reply = general_conversation(user_question=user_question)
-            return Response({"reply": reply}, status=status.HTTP_200_OK)
+            reply, used_context = general_conversation(user_question=user_question)
+            return Response({"reply": reply, "used_context": used_context}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(
                 {"error": f"AI service failed: {str(e)}"},

@@ -119,13 +119,35 @@ def compare_careers(career1: str, career2: str) -> str:
     
     raise RuntimeError("All Gemini models exhausted") from last_error
 
-def general_conversation(user_question: str) -> str:
+def general_conversation(user_question: str) -> tuple[str, bool]:
     client = get_client()
     if not os.getenv("GEMINI_API_KEY"):
         raise RuntimeError("GEMINI_API_KEY is not set in environment variables.")
 
+    context_text = "No specific news context found."
+    used_context = False
+    
+    try:
+        from news.services.qdrant_service import QdrantService
+        qdrant = QdrantService()
+        results = qdrant.search_similar(user_question, limit=3)
+        if results:
+            context_text = "\n\n".join([
+                f"- {r.payload['title']}: {r.payload['snippet']}..." 
+                for r in results
+            ])
+            used_context = True
+    except Exception as e:
+        print(f"DEBUG: Qdrant service unavailable or search failed: {e}")
+        # used_context remains False, context_text remains default
+
     prompt = f"""
     You are a professional Job Market & Career Assistant for the "Job Market Trend Hub".
+    
+    CRITICAL INSTRUCTION:
+    - You MUST only provide information related to the Job Market, Careers, Employment, Skills, and Economic trends.
+    - If the user asks something unrelated to these topics, politely decline and steer them back to job market topics.
+    - Use your training data AND the provided CURRENT CONTEXT to give accurate advice.
     
     Your goal is to:
     - Help users with career advice, interview preparation, and skill development
@@ -134,10 +156,13 @@ def general_conversation(user_question: str) -> str:
     - Maintain a professional, encouraging, and helpful tone
     - Use emojis to keep it engaging
     - Keep responses clear, concise, and easy to read
+    
+    RETRIEVED CONTEXT (Current Job Market News):
+    {context_text}
 
     User Question: {user_question}
 
-    Provide a helpful and detailed response to guide the user.
+    Provide a helpful and detailed response to guide the user, incorporating the relevant context provided above if applicable.
     """
 
     last_error = None
@@ -148,7 +173,7 @@ def general_conversation(user_question: str) -> str:
                 model=model,
                 contents=prompt
             )
-            return response.text
+            return response.text, used_context
         except Exception as e:
             last_error = e
             error_msg = str(e).lower()

@@ -71,15 +71,32 @@
   flex-direction: column;
 }
 
-.ai-bubble::before {
-  content: 'AI Assistant';
-  display: block;
+.chat-bubble-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ai-title {
   font-size: 13px;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.latest-news-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #3b82f6;
+  /* Premium Blue */
+  font-weight: 800;
+  /* Extra Bold */
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .ai-message-wrapper {
@@ -273,5 +290,22 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .latest-news-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: fit-content;
   }
 }

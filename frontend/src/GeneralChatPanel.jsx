@@ -43,7 +43,11 @@ function GeneralChatPanel() {
                 return;
             }
 
-            setMessages((prev) => [...prev, { role: "ai", content: data.reply || "⚠️ AI returned an empty response." }]);
+            setMessages((prev) => [...prev, {
+                role: "ai",
+                content: data.reply || "⚠️ AI returned an empty response.",
+                used_context: data.used_context
+            }]);
         } catch (err) {
             setMessages((prev) => [...prev, { role: "ai", content: "⚠️ Connection failed. Please check your network and try again." }]);
         } finally {
@@ -102,6 +106,15 @@ function GeneralChatPanel() {
                             >
                                 {msg.role === 'ai' ? (
                                     <div className="ai-message-wrapper">
+                                        <div className="chat-bubble-header">
+                                            <span className="ai-title">AI Assistant</span>
+                                            {msg.used_context && (
+                                                <span className="latest-news-badge-inline">
+                                                    <Sparkles size={12} />
+                                                    Latest News
+                                                </span>
+                                            )}
+                                        </div>
                                         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
                                             {msg.content}
                                         </ReactMarkdown>

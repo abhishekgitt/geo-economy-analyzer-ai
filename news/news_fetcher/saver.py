@@ -9,6 +9,7 @@ from news.news_fetcher.config import (
 )
 from .utils import word_count, parse_published_at
 from .extractors import fetch_full_text
+from news.services.qdrant_service import QdrantService
 
 
 def assign_topics(article, text):
@@ -29,6 +30,14 @@ def assign_topics(article, text):
 
 
 def save_articles(articles, stdout):
+    qdrant = QdrantService()
+    try:
+        qdrant.ensure_collection()
+    except Exception as e:
+        stdout.write(f"Warning: Could not connect to Qdrant: {e}")
+        # We continue even if Qdrant fails, so we don't block DB saving
+        qdrant = None
+
     saved = 0
     seen = set()
 
@@ -86,5 +95,10 @@ def save_articles(articles, stdout):
 
         if created:
             saved += 1
+            if qdrant:
+                try:
+                    qdrant.upsert_article(article_obj)
+                except Exception as e:
+                    stdout.write(f"Failed to index article {article_obj.id}: {e}")
 
     return saved

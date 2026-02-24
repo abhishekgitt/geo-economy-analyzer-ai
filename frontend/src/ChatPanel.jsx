@@ -118,6 +118,9 @@ function ChatPanel({ articleId, summaryId }) {
               >
                 {msg.role === 'ai' ? (
                   <div className="ai-message-wrapper">
+                    <div className="chat-bubble-header">
+                      <span className="ai-title">AI Assistant</span>
+                    </div>
                     <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
                       {msg.content}
                     </ReactMarkdown>
