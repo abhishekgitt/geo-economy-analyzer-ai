@@ -112,7 +112,7 @@ function Home() {
             <Globe size={14} className="icon-pulse" />
             <span>Real-time Intelligence</span>
           </div>
-          <h1>AI Job Market <br /><span className="gradient-text">Trend Hub</span></h1>
+          <h1>AI-Powered<br /> Job Market <br /><span className="gradient-text">Trends Hub</span></h1>
           <p>Advanced AI-driven analysis of global employment and skill shifts.</p>
           <div style={{ marginTop: '24px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <button
