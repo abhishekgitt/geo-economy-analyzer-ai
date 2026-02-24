@@ -8,6 +8,9 @@ from django.utils import timezone
 from dateutil import parser
 
 
+from django.utils.text import slugify
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
 from news.models import Article, SummaryPage, Topic
 
 from django.core.management.base import BaseCommand
@@ -31,7 +34,7 @@ FETCH_LANGUAGE = os.getenv("FETCH_LANGUAGE", "en")  # "en" or "all"
 # Keywords (Job Market Focus)
 ECON_KEYWORDS = os.getenv(
     "ECON_KEYWORDS",
-    "Remote work trends,Tech hiring 2026,Industry layoffs,Emerging skill demands,Wage growth statistics,Labor market analysis,Future of work,Gig economy,AI in recruitment,Workplace automation,Employee retention,Green jobs,Cybersecurity skills,Healthcare staffing,Education tech trends"
+    "mass layoffs, layoffs, job cuts, workforce reduction, staff reduction, downsizing, restructuring, employee termination, hiring surge, mass hiring, recruitment drive, job openings, hiring freeze, talent acquisition, expanding workforce, unemployment, rising unemployment, labor shortage, talent shortage, job market slowdown, tech layoffs, manufacturing layoffs, corporate layoffs, hiring boom"
 )
 ECON_KEYWORDS = [k.strip() for k in ECON_KEYWORDS.split(",") if k.strip()]
 
@@ -118,8 +121,8 @@ def fetch_articles():
     all_articles = []
     seen_urls = set()
     
-    # Split keywords into chunks of 2 to avoid timeouts or query limits
-    keyword_chunks = list(chunk_list(ECON_KEYWORDS, 2))
+    # Split keywords into chunks of 5 to avoid timeouts or query limits
+    keyword_chunks = list(chunk_list(ECON_KEYWORDS, 5))
     
     # Divide max records by number of chunks to keep total roughly same (or just fetch max per chunk?)
     # Let's fetch a portion per chunk to avoid fetching too many duplicates, 
@@ -130,17 +133,22 @@ def fetch_articles():
         if not chunk: 
             continue
             
-        params = {
-            "query": build_gdelt_query(chunk),
-            "mode": "artlist",
-            "format": "json",
-            "maxrecords": str(GDELT_MAX),
-        }
+        @retry(
+            stop=stop_after_attempt(3),
+            wait=wait_exponential(multiplier=1, min=4, max=10),
+            retry=retry_if_exception_type(requests.exceptions.RequestException)
+        )
+        def _fetch_chunk(chunk):
+            params = {
+                "query": build_gdelt_query(chunk),
+                "mode": "artlist",
+                "format": "json",
+                "maxrecords": str(GDELT_MAX),
+            }
 
-        if FETCH_LANGUAGE != "all":
-            params["sourcelang"] = FETCH_LANGUAGE
+            if FETCH_LANGUAGE != "all":
+                params["sourcelang"] = FETCH_LANGUAGE
 
-        try:
             resp = requests.get(
                 GDELT_BASE,
                 params=params,
@@ -148,8 +156,10 @@ def fetch_articles():
                 headers={"User-Agent": USER_AGENT},
             )
             resp.raise_for_status()
+            return resp.json()
 
-            data = resp.json()
+        try:
+            data = _fetch_chunk(chunk)
             raw_list = data.get("articles") or data.get("artlist") or []
             
             for a in raw_list:
@@ -157,9 +167,13 @@ def fetch_articles():
                 if norm['url'] not in seen_urls:
                     all_articles.append(norm)
                     seen_urls.add(norm['url'])
+            
+            # Add delay between chunks to respect rate limits
+            if len(keyword_chunks) > 1:
+                time.sleep(FETCH_INTERVAL)
                     
         except Exception as e:
-            print(f"Error fetching chunk {chunk}: {e}")
+            print(f"Error fetching chunk {chunk} after retries: {e}")
             continue
 
     return all_articles
@@ -253,10 +267,12 @@ def assign_topics(article, text):
 
     for keyword in ECON_KEYWORDS:
         if keyword.lower() in text:
-            topic = Topic.objects.filter(name__iexact=keyword).first()
-            if topic:
-                article.topics.add(topic)
-                assigned.append(topic.name)
+            topic, created = Topic.objects.get_or_create(
+                name=keyword,
+                defaults={'slug': slugify(keyword)}
+            )
+            article.topics.add(topic)
+            assigned.append(topic.name)
     
     return assigned
 
