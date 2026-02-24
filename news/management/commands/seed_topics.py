@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 from news.models import Topic
-from news.news_fetcher.config import ECON_KEYWORDS
+from news.management.commands.fetch_news import ECON_KEYWORDS
 
 class Command(BaseCommand):
     help = "Seed the Topic table with ECON_KEYWORDS from config"
