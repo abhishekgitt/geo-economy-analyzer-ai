@@ -106,7 +106,7 @@ function Login() {
           </div>
 
           <p className="signup-prompt">
-            Don’t have an account? <Link to="/signup">Create shared access</Link>
+            Don’t have an account? <Link to="/signup">Create account</Link>
           </p>
         </div>
 
